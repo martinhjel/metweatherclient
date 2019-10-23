@@ -12,7 +12,6 @@ formatter = logging.Formatter("%(levelname)s %(asctime)s %(module)s %(process)d 
 console_handler.setFormatter(formatter)
 logger.addHandler(console_handler)
 
-
 session = auth.Session(config_file='config/config.ini', logger=logger)
 poly = GeoLocation(place_id=198727066) # Oslo municipality
 
@@ -22,6 +21,6 @@ params = {
     "geometry": poly.get_simplified_wkt(max_char_size=1800)
 }
 
-df = session.get_data_frame(type='lightning', dict_params=params)
+df = session.get_data_frame(endpoint_type='lightning', dict_params=params)
 
 print(df.head())

@@ -1,17 +1,22 @@
 """Module used for authentication."""
 import requests
-import json
 import configparser
 import logging
+from typing import Dict
 from urllib.parse import urlencode
+from pandas import DataFrame
+
 
 from metclient.frost.lightning.lightning import Lightning
+
 
 class ConfigException(Exception):
     pass
 
+
 class ConfigMissingException(Exception):
     pass
+
 
 class ApiEndpoints:
     BASE_FROST_ENDPOINT = "https://frost.met.no/"
@@ -39,9 +44,7 @@ class Auth:
     def _validate(self):
 
         auth = (self.client_id, self.client_secret)
-
         # TODO: Add validation step
-
         return True
 
     def get_auth(self):
@@ -82,19 +85,31 @@ class Session(ApiEndpoints):
         response.raise_for_status()
         return response
 
-    def get_data_frame(self, type, dict_params):
-
-        if type=='lightning':
+    def get_data_frame(self, endpoint_type: str, dict_params: Dict) -> DataFrame:
+        """
+        Return a dataframe
+        :param endpoint_type: Required endpoint
+        :type endpoint_type: str
+        :param dict_params: dictionary with parameters of query
+        :type dict_params: dict
+        :return: data frame
+        :rtype: DataFrame
+        """
+        if endpoint_type == 'lightning':
             response = self.query(
                 self.lightning(),
                 dict_params
             )
             return Lightning.get_df(response)
+        elif endpoint_type in Session.TYPE:
+            raise NotImplementedError
+        else:
+            raise ValueError(endpoint_type, " is not a valid input. Must be: ", Session.TYPE)
 
     def get_metadata(self):
-        pass
+        raise NotImplementedError
 
     def search(self):
-        pass
+        raise  NotImplementedError
 
 
